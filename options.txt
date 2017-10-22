@@ -1,0 +1,8 @@
+*background: AntiqueWhite
+*Text*background: #454545
+*Text*height: 3
+*Text*width:24
+*Button*foreground: #000000
+*Button*relief: groove
+*Button*width:8
+*Button*height:3
