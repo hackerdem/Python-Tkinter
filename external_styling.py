@@ -1,7 +1,7 @@
 from tkinter import *
 root=Tk()
 root.configure(background='#4d4d4d') #top level styling
-
+root.iconbitmap('molecule.ico ')
 root.option_readfile('options.txt')
 
 mytext=Text(root,background='#101010',foreground='#6d6d6d',borderwidth=2,relief='groove')
