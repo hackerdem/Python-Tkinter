@@ -8,6 +8,32 @@ def undo():
 def redo(event=None):
     content_text.event_generate("<<Redo>>")
     return 'break' 
+def select_all(event=None):
+    content_text.tag_add('sel','1.0','end')
+    return "break"
+def find_text(event=None):
+    search_toplevel=Toplevel(root)
+    search_toplevel.title('Find Text')
+    search_toplevel.transient(root)
+    search_toplevel.reseizable(False,False)
+    Label(search_toplevel,text="Find All:").grid(row=0,column=0,sticky='e')
+    search_entry_widget=Entry(search_toplevel,width=25)
+    search_entry_widget.grid(row=0,column=1,padx=2,pady=2,sticky='we')
+    search_entry_widget.focus_set()
+    ignore_case_value=IntVar()
+    Checkbutton(search_toplevel,text='Ignore Case',variable=ignore_case_value).grid(row=1,column=1,sticky='e',padx=2,pady=2)
+    Buttn(search_toplevel,text="Find All",underline=0,command=lambda: search_output(search_entry_widget.get(),ignore_case_value.get(),content_text,search_toplevel,search_entry_widget)).grid(row=0,column=2,sticky='e'+'w',padx=2,pady=2)
+    #to delete matched words highlight after using find functionality, we will overwrite close_search_window
+    def close_search_window():
+        content_text.tag_remove('match','1.0',END)
+        search_toplevel.destroy()
+        search_toplevel.protocol('WM_DELETE_WINDOW',close_search_window)
+        return "break"
+    def search_output(needle,if_ignore_case,content_text,search_toplevel,search_box):
+        content_text.tag_remove('match','1.0',END)
+        matches_found=0
+        if needle:
+            """COMPLETE THIS PART LATER"""
 PROGRAM_NAME="Footprint Editor"
 root=Tk()
 root.geometry('350x350')
@@ -52,9 +78,9 @@ edit_menu.add_command(label='Cut',accelerator='Ctrl+X',command=cut,compound='lef
 edit_menu.add_command(label='Copy',accelerator='Ctrl+C',compound='left',image='',underline=0)
 edit_menu.add_command(label='Paste',accelerator='Ctrl+V',compound='left',image='',underline=0)
 edit_menu.add_separator()
-edit_menu.add_command(label='Find',accelerator='Ctrl+F',compound='left',image='',underline=0)
+edit_menu.add_command(label='Find',accelerator='Ctrl+F',command=find_text,compound='left',image='',underline=0)
 file_menu.add_separator()
-edit_menu.add_command(label='Select All',accelerator='Ctrl+A',compound='left',image='',underline=0)
+edit_menu.add_command(label='Select All',accelerator='Ctrl+A',command=select_all,compound='left',image='',underline=7)
 menu_bar.add_cascade(label='Edit',menu=edit_menu)
 
 #view menu
@@ -95,6 +121,10 @@ line_number_bar.pack(side='left',fill='y')
 content_text=Text(root,wrap='word',undo=1,background='#778899')
 content_text.bind('<Control-y>',redo)# event binding for providing redo functionality
 content_text.bind('<Control-Y>',redo) # redo has different conditions in tkinter so we need to do thid in this way
+content_text.bind('<Control-a>',select_all)
+content_text.bind('<Control-A>',select_all)
+control_text.bind('<Control-f>',find_text)
+control_text.bind('<Control-F>',find_text)
 content_text.pack(expand='yes',fill='both')
 scroll_bar=Scrollbar(content_text)
 content_text.configure(yscrollcommand=scroll_bar.set)
