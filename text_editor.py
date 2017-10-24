@@ -1,6 +1,13 @@
 from tkinter import *
 def cut():
     content_text.event_generate("<<Cut>>")
+    return 'break'
+def undo():
+    content_text.event_generate("<<Undo>>")
+    return 'break'
+def redo(event=None):
+    content_text.event_generate("<<Redo>>")
+    return 'break' 
 PROGRAM_NAME="Footprint Editor"
 root=Tk()
 root.geometry('350x350')
@@ -38,8 +45,8 @@ menu_bar.add_cascade(label='File',menu=file_menu)
 
 #edit menu
 edit_menu=Menu(menu_bar,tearoff=0)
-edit_menu.add_command(label='Undo',accelerator='Ctrl+Z',compound='left',image='',underline=0)
-edit_menu.add_command(label='Redo',accelerator='Ctrl+Y',compound='left',image='',underline=0)
+edit_menu.add_command(label='Undo',accelerator='Ctrl+Z',command=undo,compound='left',image='',underline=0)
+edit_menu.add_command(label='Redo',accelerator='Ctrl+Y',command=redo,compound='left',image='',underline=0)
 edit_menu.add_separator()
 edit_menu.add_command(label='Cut',accelerator='Ctrl+X',command=cut,compound='left',image='',underline=0)
 edit_menu.add_command(label='Copy',accelerator='Ctrl+C',compound='left',image='',underline=0)
@@ -85,7 +92,9 @@ line_number_bar=Text(root,width=4,padx=3,takefocus=0,border=0,background='#77889
 line_number_bar.pack(side='left',fill='y')
 
 #text and scroolbar widgets for root window
-content_text=Text(root,wrap='word',background='#778899')
+content_text=Text(root,wrap='word',undo=1,background='#778899')
+content_text.bind('<Control-y>',redo)# event binding for providing redo functionality
+content_text.bind('<Control-Y>',redo) # redo has different conditions in tkinter so we need to do thid in this way
 content_text.pack(expand='yes',fill='both')
 scroll_bar=Scrollbar(content_text)
 content_text.configure(yscrollcommand=scroll_bar.set)
