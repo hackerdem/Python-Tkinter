@@ -1,4 +1,21 @@
 from tkinter import *
+import tkinter.filedialog as fd
+import os
+
+PROGRAM_NAME="Footprint Editor"
+root=Tk()
+root.geometry('350x350')
+root.title(PROGRAM_NAME)
+file_name=None
+def open_file(event=None):
+    input_file_name=fd.askopenfilename(defaultextension=".txt",filetypes=[("All Files","*.*"),("Text Documents","*.txt")])
+    if input_file_name:
+        global file_name
+        file_name=input_file_name
+        root.title('{}-{}'.format(os.path.basename(file_name),PROGRAM_NAME))
+        content_text.delete(1.0,END)
+        with open(file_name) as _file:
+            content_text.insert(1.0,_file.read())
 def cut():
     content_text.event_generate("<<Cut>>")
     return 'break'
@@ -45,10 +62,7 @@ def search_output(needle,if_ignore_case,content_text,search_toplevel,search_box)
         content_text.tag_config('match',foreground='red',background='yellow')
     search_box.focus_set()
     search_toplevel.title('{} matches found'.format(matches_found))
-PROGRAM_NAME="Footprint Editor"
-root=Tk()
-root.geometry('350x350')
-root.title(PROGRAM_NAME)
+
 
 #icons
 #WARNINIG##########change ico is not working make it gif
