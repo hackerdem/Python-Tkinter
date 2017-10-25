@@ -6,6 +6,7 @@ PROGRAM_NAME="Footprint Editor"
 root=Tk()
 root.geometry('350x350')
 root.title(PROGRAM_NAME)
+root.attributes('-alpha',0.8)
 file_name=None
 def open_file(event=None):
     input_file_name=fd.askopenfilename(defaultextension=".txt",filetypes=[("All Files","*.*"),("Text Documents","*.txt")])
@@ -16,6 +17,33 @@ def open_file(event=None):
         content_text.delete(1.0,END)
         with open(file_name) as _file:
             content_text.insert(1.0,_file.read())
+def save(event=None):
+    global file_name
+    if not file_name:
+        save_as()
+    else:
+        write_to_file(file_name)
+    return "break"
+def save_as(event=None):
+    input_file_name=fd.asksaveasfilename(defaultextension=".txt",filetypes=[("All Files","*.*"),("Text Documents","*.txt")])
+    if input_file_name:
+        global file_name
+        file_name=input_file_name
+        write_to_file(file_name)
+        root.title('{} - {}'.format(os.path.basename(file_name),PROGRAM_NAME))
+    return "break"
+def write_to_file(file_name):
+    try:
+        content=content_text.get(1.0,'end')
+        with open(file_name,'w') as the_file:
+            the_file.write(content)
+    except IOError:
+        pass
+def new_file(event=None):
+    root.title("Untitled")
+    global file_name
+    file_name=None
+    content_text.delete(1.0,END)
 def cut():
     content_text.event_generate("<<Cut>>")
     return 'break'
@@ -86,10 +114,10 @@ color_shemes={
 menu_bar=Menu(root)
 #file menu
 file_menu=Menu(menu_bar,tearoff=0)
-file_menu.add_command(label='New',accelerator='Ctrl+N',compound='left',image='',underline=0)
-file_menu.add_command(label='Open',accelerator='Ctrl+O',compound='left',image='',underline=0)
-file_menu.add_command(label='Save',accelerator='Ctrl+S',compound='left',image='',underline=0)
-file_menu.add_command(label='Save as',accelerator='Shift+Ctrl+S',compound='left',image='',underline=0)
+file_menu.add_command(label='New',accelerator='Ctrl+N',command=new_file,compound='left',image='',underline=0)
+file_menu.add_command(label='Open',accelerator='Ctrl+O',command=open_file,compound='left',image='',underline=0)
+file_menu.add_command(label='Save',accelerator='Ctrl+S',command=save,compound='left',image='',underline=0)
+file_menu.add_command(label='Save as',accelerator='Shift+Ctrl+S',command=save_as,compound='left',image='',underline=0)
 file_menu.add_separator()
 file_menu.add_command(label='Exit',accelerator='Alt+F4')
 menu_bar.add_cascade(label='File',menu=file_menu)
