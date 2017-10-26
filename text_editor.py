@@ -1,13 +1,22 @@
 from tkinter import *
 import tkinter.filedialog as fd
 import os
-
+from tkinter import messagebox as mbox
 PROGRAM_NAME="Footprint Editor"
 root=Tk()
 root.geometry('350x350')
 root.title(PROGRAM_NAME)
 root.attributes('-alpha',0.8)
 file_name=None
+def exit_editor(event=None):
+    if mbox.askokcancel("Quit?","Really quit?"):
+        root.destroy()
+def display_about_messagebox(event=None):
+    mbox.showinfo(
+    "About","{} {}".format(PROGRAM_NAME,"\nSimple text editor\n but one day it will be a Python IDE"))
+def display_help_messagebox(event=None):
+    mbox.showinfo(
+    "Help","Help Book: \nSimple text editor\n but one day it will be a Python IDE",icon='question')
 def open_file(event=None):
     input_file_name=fd.askopenfilename(defaultextension=".txt",filetypes=[("All Files","*.*"),("Text Documents","*.txt")])
     if input_file_name:
@@ -93,11 +102,11 @@ def search_output(needle,if_ignore_case,content_text,search_toplevel,search_box)
 
 
 #icons
-#WARNINIG##########change ico is not working make it gif
-"""new_file_icon=PhotoImage(file='if_file_173011.ico')
-saveas_file_icon=PhotoImage(file='if_Save-as_85541.ico')
-save_icon=PhotoImage(file='if_save_173091.ico')
-open_file_icon=PhotoImage(file='if_folder-open_173017.ico')"""
+
+new_file_icon=PhotoImage(file='icons/new_file.gif')
+saveas_file_icon=PhotoImage(file='icons/save.gif')
+save_icon=PhotoImage(file='icons/save.gif')
+open_file_icon=PhotoImage(file='icons/open_file.gif')
 
 """ Color options are listed in a dictionary"""
 color_shemes={
@@ -114,12 +123,12 @@ color_shemes={
 menu_bar=Menu(root)
 #file menu
 file_menu=Menu(menu_bar,tearoff=0)
-file_menu.add_command(label='New',accelerator='Ctrl+N',command=new_file,compound='left',image='',underline=0)
-file_menu.add_command(label='Open',accelerator='Ctrl+O',command=open_file,compound='left',image='',underline=0)
-file_menu.add_command(label='Save',accelerator='Ctrl+S',command=save,compound='left',image='',underline=0)
-file_menu.add_command(label='Save as',accelerator='Shift+Ctrl+S',command=save_as,compound='left',image='',underline=0)
+file_menu.add_command(label='New',accelerator='Ctrl+N',command=new_file,compound='left',image=new_file_icon,underline=0)
+file_menu.add_command(label='Open',accelerator='Ctrl+O',command=open_file,compound='left',image=open_file_icon,underline=0)
+file_menu.add_command(label='Save',accelerator='Ctrl+S',command=save,compound='left',image=save_icon,underline=0)
+file_menu.add_command(label='Save as',accelerator='Shift+Ctrl+S',command=save_as,compound='left',image=saveas_file_icon,underline=0)
 file_menu.add_separator()
-file_menu.add_command(label='Exit',accelerator='Alt+F4')
+file_menu.add_command(label='Exit',command=exit_editor,accelerator='Alt+F4')
 menu_bar.add_cascade(label='File',menu=file_menu)
 
 #edit menu
@@ -157,11 +166,11 @@ menu_bar.add_cascade(label='View',menu=view_menu)
 
 #about menu
 about_menu=Menu(menu_bar,tearoff=0)
-about_menu.add_command(label='About',compound='left',underline=0)
-about_menu.add_command(label='Help',compound='left',image='',underline=0)
+about_menu.add_command(label='About',command=display_about_messagebox,compound='left',underline=0)
+about_menu.add_command(label='Help',command=display_help_messagebox,compound='left',image='',underline=0)
 menu_bar.add_cascade(label='About',menu=about_menu)
 root.config(menu=menu_bar)
-
+root.protocol('WM_DELETE_WINDOW',exit_editor)
 #shortcut bar
 shortcut_bar=Frame(root,height=25,background='#DCDCDC')
 shortcut_bar.pack(expand='no',fill='x')
@@ -171,7 +180,7 @@ line_number_bar=Text(root,width=4,padx=3,takefocus=0,border=0,background='#77889
 line_number_bar.pack(side='left',fill='y')
 
 #text and scroolbar widgets for root window
-content_text=Text(root,wrap='word',undo=1,background='#778899')
+content_text=Text(root,wrap='word',undo=1,background='#778899',font=("Helvetica", 16),fg="#FFFFFF")
 content_text.bind('<Control-y>',redo)# event binding for providing redo functionality
 content_text.bind('<Control-Y>',redo) # redo has different conditions in tkinter so we need to do thid in this way
 content_text.bind('<Control-a>',select_all)
@@ -184,6 +193,7 @@ content_text.bind('<Control-O>', open_file)
 content_text.bind('<Control-o>', open_file)
 content_text.bind('<Control-S>', save)
 content_text.bind('<Control-s>', save)
+content_text.bind('<KeyPress-F1>',display_help_messagebox)
 content_text.pack(expand='yes',fill='both')
 scroll_bar=Scrollbar(content_text)
 content_text.configure(yscrollcommand=scroll_bar.set)
